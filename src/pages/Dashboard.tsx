@@ -94,6 +94,11 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleRowItemPlay = (item: Movie | TVShow) => {
+    setFeaturedItem(item);
+    setShowVideoPlayer(true);
+  };
+
   // Show API key setup message if there's an error
   if (trendingError && trendingError.message.includes("API key")) {
     return (
