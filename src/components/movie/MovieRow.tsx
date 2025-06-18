@@ -92,7 +92,11 @@ const MovieRow: React.FC<MovieRowProps> = ({
                 className="flex-shrink-0"
                 style={{ scrollSnapAlign: "start" }}
               >
-                <MovieCard item={item} size="medium" />
+                <MovieCard
+                  item={item}
+                  size="medium"
+                  onPlayClick={onPlayClick}
+                />
               </div>
             ))}
           </div>
