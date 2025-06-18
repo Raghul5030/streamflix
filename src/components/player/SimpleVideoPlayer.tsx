@@ -128,21 +128,20 @@ const SimpleVideoPlayer: React.FC<SimpleVideoPlayerProps> = ({
               </Button>
             </a>
 
-            {/* Embedded iframe attempt */}
-            <div className="bg-white/10 rounded p-4">
-              <p className="text-white/70 text-sm mb-3">
-                Or try embedded player:
-              </p>
-              <div className="aspect-video bg-black rounded overflow-hidden">
-                <iframe
-                  src={`https://www.youtube.com/embed/${selectedTrailer.key}?autoplay=0&controls=1&rel=0`}
-                  title={selectedTrailer.name}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </div>
+            {/* Quick Play Option */}
+            <Button
+              onClick={() =>
+                window.open(
+                  `https://www.youtube.com/watch?v=${selectedTrailer.key}`,
+                  "_blank",
+                )
+              }
+              variant="outline"
+              className="w-full border-white/30 bg-white/10 text-white hover:bg-white/20"
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Quick Play (New Tab)
+            </Button>
           </div>
         </div>
       </div>

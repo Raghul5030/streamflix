@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import VideoPlayer from "@/components/player/VideoPlayer";
 import SimpleVideoPlayer from "@/components/player/SimpleVideoPlayer";
+import DirectVideoLauncher from "@/components/player/DirectVideoLauncher";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMovieTrailers, fetchTVTrailers } from "@/lib/video";
@@ -42,7 +43,9 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({
 }) => {
   const [showPlayer, setShowPlayer] = useState(false);
   const [userRating, setUserRating] = useState<"like" | "dislike" | null>(null);
-  const [useSimplePlayer, setUseSimplePlayer] = useState(true); // Use simple player by default
+  const [playerType, setPlayerType] = useState<
+    "direct" | "simple" | "advanced"
+  >("direct"); // Use direct launcher by default
 
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const isItemInWishlist = item ? isInWishlist(item.id) : false;
@@ -123,7 +126,14 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({
     return (
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent className="max-w-6xl w-[95vw] h-[90vh] p-0 bg-black border-none">
-          {useSimplePlayer ? (
+          {playerType === "direct" ? (
+            <DirectVideoLauncher
+              item={item}
+              trailers={trailers || []}
+              onClose={() => setShowPlayer(false)}
+              onBack={() => setShowPlayer(false)}
+            />
+          ) : playerType === "simple" ? (
             <SimpleVideoPlayer
               item={item}
               trailers={trailers || []}

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Heart, Trash2, Calendar, Filter } from "lucide-react";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { showWishlistToast } from "@/lib/toast-utils";
 
 const MyList: React.FC = () => {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ const MyList: React.FC = () => {
       window.confirm("Are you sure you want to clear your entire wishlist?")
     ) {
       clearWishlist();
+      showWishlistToast.cleared();
     }
   };
 
