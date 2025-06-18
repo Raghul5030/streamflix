@@ -5,13 +5,16 @@ import MovieRow from "@/components/movie/MovieRow";
 import MovieCard from "@/components/movie/MovieCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Plus, Info, Volume2, VolumeX } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Play, Plus, Info, Volume2, VolumeX, RotateCcw } from "lucide-react";
 import { tmdbClient, Movie, TVShow, TMDBClient } from "@/lib/tmdb";
 import { cn } from "@/lib/utils";
 
 const Dashboard: React.FC = () => {
   const [featuredItem, setFeaturedItem] = useState<Movie | TVShow | null>(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [countdown, setCountdown] = useState(10);
+  const [isAutoRotating, setIsAutoRotating] = useState(true);
 
   // Fetch data using React Query
   const {
@@ -54,22 +57,61 @@ const Dashboard: React.FC = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Set featured item from trending movies
+  // Real-time auto-rotating featured content with countdown
   useEffect(() => {
-    if (trendingMovies?.results && trendingMovies.results.length > 0) {
+    if (
+      trendingMovies?.results &&
+      trendingMovies.results.length > 0 &&
+      !featuredItem
+    ) {
+      // Set initial featured item
       const randomIndex = Math.floor(
         Math.random() * Math.min(5, trendingMovies.results.length),
       );
       setFeaturedItem(trendingMovies.results[randomIndex]);
     }
-  }, [trendingMovies]);
+  }, [trendingMovies, featuredItem]);
+
+  // Countdown timer
+  useEffect(() => {
+    if (!isAutoRotating) return;
+
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          // Time to rotate
+          if (trendingMovies?.results && trendingMovies.results.length > 0) {
+            const availableItems = trendingMovies.results.slice(0, 8);
+            const currentIndex = availableItems.findIndex(
+              (item) => item.id === featuredItem?.id,
+            );
+            const nextIndex = (currentIndex + 1) % availableItems.length;
+            setFeaturedItem(availableItems[nextIndex]);
+          }
+          return 10; // Reset countdown
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  }, [isAutoRotating, featuredItem?.id, trendingMovies]);
 
   const handlePlay = () => {
     if (featuredItem) {
-      console.log(
-        "Playing:",
-        "title" in featuredItem ? featuredItem.title : featuredItem.name,
-      );
+      const title =
+        "title" in featuredItem ? featuredItem.title : featuredItem.name;
+      console.log("Playing:", title);
+
+      // Open video directly in new tab for immediate playback
+      if (featuredItem.id) {
+        // Try to get trailer directly
+        const searchQuery = encodeURIComponent(`${title} official trailer`);
+        window.open(
+          `https://www.youtube.com/results?search_query=${searchQuery}`,
+          "_blank",
+        );
+      }
     }
   };
 
@@ -203,11 +245,26 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center gap-4 animate-fade-in">
               <Button
                 size="lg"
-                className="bg-white text-black hover:bg-gray-200 font-semibold text-lg px-8"
-                onClick={handlePlay}
+                className="bg-white text-black hover:bg-gray-200 font-semibold text-lg px-8 transition-all hover:scale-105"
+                onClick={() => {
+                  if (featuredItem) {
+                    const title =
+                      "title" in featuredItem
+                        ? featuredItem.title
+                        : featuredItem.name;
+                    // Direct search for the specific movie/show trailer
+                    const searchQuery = encodeURIComponent(
+                      `${title} official trailer 2024`,
+                    );
+                    window.open(
+                      `https://www.youtube.com/results?search_query=${searchQuery}`,
+                      "_blank",
+                    );
+                  }
+                }}
               >
                 <Play className="w-6 h-6 mr-2 fill-current" />
-                Play
+                Play Trailer
               </Button>
               <Button
                 size="lg"
@@ -225,6 +282,50 @@ const Dashboard: React.FC = () => {
                 onClick={handleAddToList}
               >
                 <Plus className="w-6 h-6" />
+              </Button>
+            </div>
+
+            {/* Real-time controls */}
+            <div className="flex items-center gap-4 mt-6">
+              <div className="flex items-center gap-2 text-white/70 text-sm">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span>Live • Next in {countdown}s</span>
+              </div>
+              <Button
+                onClick={() => {
+                  if (
+                    trendingMovies?.results &&
+                    trendingMovies.results.length > 0
+                  ) {
+                    const availableItems = trendingMovies.results.slice(0, 8);
+                    const currentIndex = availableItems.findIndex(
+                      (item) => item.id === featuredItem?.id,
+                    );
+                    const nextIndex =
+                      (currentIndex + 1) % availableItems.length;
+                    setFeaturedItem(availableItems[nextIndex]);
+                    setCountdown(10);
+                  }
+                }}
+                variant="outline"
+                size="sm"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 h-8"
+              >
+                <RotateCcw className="w-4 h-4 mr-1" />
+                Next
+              </Button>
+              <Button
+                onClick={() => setIsAutoRotating(!isAutoRotating)}
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "border-white/30 text-white h-8",
+                  isAutoRotating
+                    ? "bg-green-600/20 border-green-600"
+                    : "bg-white/10 hover:bg-white/20",
+                )}
+              >
+                {isAutoRotating ? "Auto ON" : "Auto OFF"}
               </Button>
             </div>
           </div>
