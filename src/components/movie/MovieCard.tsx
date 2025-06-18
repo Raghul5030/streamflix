@@ -46,13 +46,12 @@ const MovieCard: React.FC<MovieCardProps> = ({
     e.stopPropagation();
     console.log(`Playing: ${title}`, item);
 
-    // Option 1: Open in modal (current behavior)
-    setShowDetailModal(true);
-
-    // Option 2: Navigate to dedicated video player page (uncomment to use)
-    // const navigate = useNavigate();
-    // const type = "title" in item ? "movie" : "tv";
-    // navigate(`/watch?id=${item.id}&type=${type}`);
+    // Use external play handler if provided, otherwise open detail modal
+    if (onPlayClick) {
+      onPlayClick(item);
+    } else {
+      setShowDetailModal(true);
+    }
   };
 
   const handleAddToList = (e: React.MouseEvent) => {
