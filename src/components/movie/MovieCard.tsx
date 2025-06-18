@@ -22,6 +22,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
   size = "medium",
   showDetails = false,
   className,
+  onPlayClick,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
