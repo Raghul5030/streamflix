@@ -253,6 +253,7 @@ const Dashboard: React.FC = () => {
             title="Trending Now"
             items={trendingMovies?.results || []}
             isLoading={loadingTrending}
+            onPlayClick={handleRowItemPlay}
           />
 
           {/* Popular Movies */}
@@ -260,6 +261,7 @@ const Dashboard: React.FC = () => {
             title="Popular Movies"
             items={popularMovies?.results || []}
             isLoading={loadingPopular}
+            onPlayClick={handleRowItemPlay}
           />
 
           {/* Top Rated Movies */}
@@ -267,6 +269,7 @@ const Dashboard: React.FC = () => {
             title="Top Rated Movies"
             items={topRatedMovies?.results || []}
             isLoading={loadingTopRated}
+            onPlayClick={handleRowItemPlay}
           />
 
           {/* Popular TV Shows */}
@@ -274,6 +277,7 @@ const Dashboard: React.FC = () => {
             title="Popular TV Shows"
             items={popularTVShows?.results || []}
             isLoading={loadingTV}
+            onPlayClick={handleRowItemPlay}
           />
         </div>
       </section>
