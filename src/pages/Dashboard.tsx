@@ -2,21 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/Header";
 import MovieRow from "@/components/movie/MovieRow";
-import MovieCard from "@/components/movie/MovieCard";
-import InSiteVideoPlayer from "@/components/player/InSiteVideoPlayer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Play, Plus, Info, Volume2, VolumeX, RotateCcw } from "lucide-react";
+import { Play, Plus, Info, Volume2, VolumeX } from "lucide-react";
 import { tmdbClient, Movie, TVShow, TMDBClient } from "@/lib/tmdb";
-import { cn } from "@/lib/utils";
 
 const Dashboard: React.FC = () => {
   const [featuredItem, setFeaturedItem] = useState<Movie | TVShow | null>(null);
   const [isMuted, setIsMuted] = useState(true);
-  const [countdown, setCountdown] = useState(10);
-  const [isAutoRotating, setIsAutoRotating] = useState(true);
-  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
 
   // Fetch data using React Query
   const {
@@ -26,82 +19,46 @@ const Dashboard: React.FC = () => {
   } = useQuery({
     queryKey: ["trending-movies"],
     queryFn: () => tmdbClient.getTrendingMovies(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
-  const {
-    data: popularMovies,
-    isLoading: loadingPopular,
-    error: popularError,
-  } = useQuery({
+  const { data: popularMovies, isLoading: loadingPopular } = useQuery({
     queryKey: ["popular-movies"],
     queryFn: () => tmdbClient.getPopularMovies(),
     staleTime: 5 * 60 * 1000,
   });
 
-  const {
-    data: topRatedMovies,
-    isLoading: loadingTopRated,
-    error: topRatedError,
-  } = useQuery({
+  const { data: topRatedMovies, isLoading: loadingTopRated } = useQuery({
     queryKey: ["top-rated-movies"],
     queryFn: () => tmdbClient.getTopRatedMovies(),
     staleTime: 5 * 60 * 1000,
   });
 
-  const {
-    data: popularTVShows,
-    isLoading: loadingTV,
-    error: tvError,
-  } = useQuery({
+  const { data: popularTVShows, isLoading: loadingTV } = useQuery({
     queryKey: ["popular-tv"],
     queryFn: () => tmdbClient.getPopularTVShows(),
     staleTime: 5 * 60 * 1000,
   });
 
-  // Real-time auto-rotating featured content with countdown
+  // Set featured item from trending movies
   useEffect(() => {
-    if (
-      trendingMovies?.results &&
-      trendingMovies.results.length > 0 &&
-      !featuredItem
-    ) {
-      // Set initial featured item
+    if (trendingMovies?.results && trendingMovies.results.length > 0) {
       const randomIndex = Math.floor(
         Math.random() * Math.min(5, trendingMovies.results.length),
       );
       setFeaturedItem(trendingMovies.results[randomIndex]);
     }
-  }, [trendingMovies, featuredItem]);
-
-  // Countdown timer
-  useEffect(() => {
-    if (!isAutoRotating) return;
-
-    const countdownInterval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          // Time to rotate
-          if (trendingMovies?.results && trendingMovies.results.length > 0) {
-            const availableItems = trendingMovies.results.slice(0, 8);
-            const currentIndex = availableItems.findIndex(
-              (item) => item.id === featuredItem?.id,
-            );
-            const nextIndex = (currentIndex + 1) % availableItems.length;
-            setFeaturedItem(availableItems[nextIndex]);
-          }
-          return 10; // Reset countdown
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(countdownInterval);
-  }, [isAutoRotating, featuredItem?.id, trendingMovies]);
+  }, [trendingMovies]);
 
   const handlePlay = () => {
     if (featuredItem) {
-      setShowVideoPlayer(true);
+      const title =
+        "title" in featuredItem ? featuredItem.title : featuredItem.name;
+      const searchQuery = encodeURIComponent(`${title} official trailer`);
+      window.open(
+        `https://www.youtube.com/results?search_query=${searchQuery}`,
+        "_blank",
+      );
     }
   };
 
@@ -116,7 +73,10 @@ const Dashboard: React.FC = () => {
 
   const handleMoreInfo = () => {
     if (featuredItem) {
-      setShowVideoPlayer(true);
+      console.log(
+        "More info:",
+        "title" in featuredItem ? featuredItem.title : featuredItem.name,
+      );
     }
   };
 
@@ -132,27 +92,8 @@ const Dashboard: React.FC = () => {
             </h2>
             <p className="text-streaming-gray-light mb-6">
               To display real movie and TV show data, you need to add your TMDB
-              API key to{" "}
-              <code className="bg-streaming-darker px-2 py-1 rounded text-netflix-400">
-                src/lib/tmdb.ts
-              </code>
+              API key.
             </p>
-            <div className="text-left bg-streaming-darker p-4 rounded mb-4">
-              <p className="text-xs text-streaming-gray mb-2">
-                1. Get a free API key from{" "}
-                <a
-                  href="https://www.themoviedb.org/settings/api"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-netflix-400 hover:text-netflix-300"
-                >
-                  TMDB
-                </a>
-              </p>
-              <p className="text-xs text-streaming-gray">
-                2. Add it to the TMDB_API_KEY variable in tmdb.ts
-              </p>
-            </div>
             <Button
               onClick={() => window.location.reload()}
               className="bg-netflix-600 hover:bg-netflix-700 text-white"
@@ -199,7 +140,7 @@ const Dashboard: React.FC = () => {
           <div className="max-w-2xl">
             {/* Title */}
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 animate-fade-in">
-              {title}
+              {title || "Welcome to StreamFlix"}
             </h1>
 
             {/* Description */}
@@ -232,7 +173,7 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center gap-4 animate-fade-in">
               <Button
                 size="lg"
-                className="bg-white text-black hover:bg-gray-200 font-semibold text-lg px-8 transition-all hover:scale-105"
+                className="bg-white text-black hover:bg-gray-200 font-semibold text-lg px-8"
                 onClick={handlePlay}
               >
                 <Play className="w-6 h-6 mr-2 fill-current" />
@@ -306,36 +247,8 @@ const Dashboard: React.FC = () => {
             items={popularTVShows?.results || []}
             isLoading={loadingTV}
           />
-
-          {/* Demo rows for additional content */}
-          <MovieRow
-            title="Action & Adventure"
-            items={popularMovies?.results?.slice(0, 10) || []}
-            isLoading={loadingPopular}
-          />
-
-          <MovieRow
-            title="Comedy Movies"
-            items={topRatedMovies?.results?.slice(5, 15) || []}
-            isLoading={loadingTopRated}
-          />
-
-          <MovieRow
-            title="Documentaries"
-            items={trendingMovies?.results?.slice(3, 13) || []}
-            isLoading={loadingTrending}
-          />
         </div>
       </section>
-
-      {/* Video Player Modal */}
-      {featuredItem && (
-        <InSiteVideoPlayer
-          item={featuredItem}
-          isOpen={showVideoPlayer}
-          onClose={() => setShowVideoPlayer(false)}
-        />
-      )}
     </div>
   );
 };
