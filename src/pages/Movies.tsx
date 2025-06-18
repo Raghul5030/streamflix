@@ -318,6 +318,15 @@ const Movies: React.FC = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Video Player Modal */}
+      {selectedMovie && (
+        <InSiteVideoPlayer
+          item={selectedMovie}
+          isOpen={showVideoPlayer}
+          onClose={() => setShowVideoPlayer(false)}
+        />
+      )}
     </div>
   );
 };
