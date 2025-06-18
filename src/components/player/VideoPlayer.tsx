@@ -161,19 +161,31 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
         ) : selectedTrailer ? (
           // YouTube trailer embed
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full bg-black">
             <iframe
-              src={getYouTubeEmbedUrl(selectedTrailer.key)}
+              key={selectedTrailer.key}
+              src={`https://www.youtube.com/embed/${selectedTrailer.key}?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autohide=0`}
               title={selectedTrailer.name}
               className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
-              loading="eager"
-              referrerPolicy="strict-origin-when-cross-origin"
-              sandbox="allow-scripts allow-same-origin allow-presentation"
+              frameBorder="0"
+              onLoad={() => console.log("YouTube iframe loaded")}
+              onError={(e) => console.error("YouTube iframe error:", e)}
             />
-            <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded">
-              Playing: {selectedTrailer.name}
+            <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded z-10">
+              🎬 {selectedTrailer.name}
+            </div>
+            {/* Fallback link */}
+            <div className="absolute bottom-4 right-4 z-10">
+              <a
+                href={`https://www.youtube.com/watch?v=${selectedTrailer.key}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
+              >
+                Open in YouTube
+              </a>
             </div>
           </div>
         ) : trailers && trailers.length === 0 ? (

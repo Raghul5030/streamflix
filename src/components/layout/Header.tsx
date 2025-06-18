@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +22,7 @@ import {
   LogOut,
   Menu,
   X,
+  Heart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +32,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ className }) => {
   const { user, signOut } = useAuth();
+  const { wishlistCount } = useWishlist();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -121,6 +125,25 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                 className="text-streaming-gray-light hover:text-white p-2 h-8 w-8"
               >
                 <Search className="w-5 h-5" />
+              </Button>
+            </Link>
+
+            {/* Wishlist */}
+            <Link to="/my-list">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-streaming-gray-light hover:text-white p-2 h-8 w-8 relative"
+              >
+                <Heart className="w-5 h-5" />
+                {wishlistCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-netflix-600"
+                  >
+                    {wishlistCount > 99 ? "99+" : wishlistCount}
+                  </Badge>
+                )}
               </Button>
             </Link>
 

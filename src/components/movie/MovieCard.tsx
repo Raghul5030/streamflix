@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Play, Plus, ThumbsUp, Info } from "lucide-react";
+import { Play, Plus, Check, ThumbsUp, Info } from "lucide-react";
 import { Movie, TVShow, TMDBClient } from "@/lib/tmdb";
+import { useWishlist } from "@/contexts/WishlistContext";
 import MovieDetailModal from "./MovieDetailModal";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,9 @@ const MovieCard: React.FC<MovieCardProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const isItemInWishlist = isInWishlist(item.id);
 
   const title = "title" in item ? item.title : item.name;
   const releaseDate =
@@ -50,8 +54,18 @@ const MovieCard: React.FC<MovieCardProps> = ({
 
   const handleAddToList = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // In a real app, this would add to user's watchlist
-    console.log(`Added to list: ${title}`);
+
+    if (isItemInWishlist) {
+      const success = removeFromWishlist(item.id);
+      if (success) {
+        console.log(`Removed from wishlist: ${title}`);
+      }
+    } else {
+      const success = addToWishlist(item);
+      if (success) {
+        console.log(`Added to wishlist: ${title}`);
+      }
+    }
   };
 
   const handleLike = (e: React.MouseEvent) => {
@@ -123,10 +137,19 @@ const MovieCard: React.FC<MovieCardProps> = ({
               <Button
                 size="sm"
                 variant="outline"
-                className="border-white/30 bg-black/50 text-white hover:bg-white/20 p-2 h-8 w-8"
+                className={cn(
+                  "border-white/30 p-2 h-8 w-8",
+                  isItemInWishlist
+                    ? "bg-green-600 text-white border-green-600 hover:bg-green-700"
+                    : "bg-black/50 text-white hover:bg-white/20",
+                )}
                 onClick={handleAddToList}
               >
-                <Plus className="w-4 h-4" />
+                {isItemInWishlist ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  <Plus className="w-4 h-4" />
+                )}
               </Button>
               <Button
                 size="sm"
