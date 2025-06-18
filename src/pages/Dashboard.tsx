@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/Header";
 import MovieRow from "@/components/movie/MovieRow";
+import InSiteVideoPlayer from "@/components/player/InSiteVideoPlayer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Plus, Info, Volume2, VolumeX } from "lucide-react";
@@ -10,6 +11,7 @@ import { tmdbClient, Movie, TVShow, TMDBClient } from "@/lib/tmdb";
 const Dashboard: React.FC = () => {
   const [featuredItem, setFeaturedItem] = useState<Movie | TVShow | null>(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
 
   // Fetch data using React Query
   const {
@@ -52,13 +54,7 @@ const Dashboard: React.FC = () => {
 
   const handlePlay = () => {
     if (featuredItem) {
-      const title =
-        "title" in featuredItem ? featuredItem.title : featuredItem.name;
-      const searchQuery = encodeURIComponent(`${title} official trailer`);
-      window.open(
-        `https://www.youtube.com/results?search_query=${searchQuery}`,
-        "_blank",
-      );
+      setShowVideoPlayer(true);
     }
   };
 
@@ -73,10 +69,7 @@ const Dashboard: React.FC = () => {
 
   const handleMoreInfo = () => {
     if (featuredItem) {
-      console.log(
-        "More info:",
-        "title" in featuredItem ? featuredItem.title : featuredItem.name,
-      );
+      setShowVideoPlayer(true);
     }
   };
 
@@ -249,6 +242,15 @@ const Dashboard: React.FC = () => {
           />
         </div>
       </section>
+
+      {/* Video Player Modal */}
+      {featuredItem && (
+        <InSiteVideoPlayer
+          item={featuredItem}
+          isOpen={showVideoPlayer}
+          onClose={() => setShowVideoPlayer(false)}
+        />
+      )}
     </div>
   );
 };
