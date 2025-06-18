@@ -17,7 +17,7 @@ export interface VideoTrailer {
 
 // YouTube trailer integration
 export const getYouTubeEmbedUrl = (key: string): string => {
-  return `https://www.youtube.com/embed/${key}?autoplay=1&controls=1&rel=0&showinfo=0&modestbranding=1`;
+  return `https://www.youtube.com/embed/${key}?autoplay=1&controls=1&rel=0&showinfo=0&modestbranding=1&enablejsapi=1&origin=${window.location.origin}`;
 };
 
 export const getYouTubeThumbnail = (

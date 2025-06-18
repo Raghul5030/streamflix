@@ -165,10 +165,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <iframe
               src={getYouTubeEmbedUrl(selectedTrailer.key)}
               title={selectedTrailer.name}
-              className="w-full h-full"
+              className="w-full h-full border-0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
               loading="eager"
+              referrerPolicy="strict-origin-when-cross-origin"
+              sandbox="allow-scripts allow-same-origin allow-presentation"
             />
             <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded">
               Playing: {selectedTrailer.name}
