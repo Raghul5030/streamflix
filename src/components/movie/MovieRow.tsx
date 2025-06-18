@@ -10,6 +10,7 @@ interface MovieRowProps {
   items: (Movie | TVShow)[];
   isLoading?: boolean;
   className?: string;
+  onPlayClick?: (item: Movie | TVShow) => void;
 }
 
 const MovieRow: React.FC<MovieRowProps> = ({
