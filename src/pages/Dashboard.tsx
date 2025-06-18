@@ -61,7 +61,11 @@ const Dashboard: React.FC = () => {
 
   // Real-time auto-rotating featured content with countdown
   useEffect(() => {
-    if (trendingMovies?.results && trendingMovies.results.length > 0 && !featuredItem) {
+    if (
+      trendingMovies?.results &&
+      trendingMovies.results.length > 0 &&
+      !featuredItem
+    ) {
       // Set initial featured item
       const randomIndex = Math.floor(
         Math.random() * Math.min(5, trendingMovies.results.length),
@@ -81,7 +85,7 @@ const Dashboard: React.FC = () => {
           if (trendingMovies?.results && trendingMovies.results.length > 0) {
             const availableItems = trendingMovies.results.slice(0, 8);
             const currentIndex = availableItems.findIndex(
-              item => item.id === featuredItem?.id
+              (item) => item.id === featuredItem?.id,
             );
             const nextIndex = (currentIndex + 1) % availableItems.length;
             setFeaturedItem(availableItems[nextIndex]);
@@ -252,8 +256,6 @@ const Dashboard: React.FC = () => {
                 <Plus className="w-6 h-6" />
               </Button>
             </div>
-
-
           </div>
         </div>
 
@@ -321,7 +323,8 @@ const Dashboard: React.FC = () => {
           <MovieRow
             title="Documentaries"
             items={trendingMovies?.results?.slice(3, 13) || []}
-          )}
+            isLoading={loadingTrending}
+          />
         </div>
       </section>
 
@@ -336,6 +339,7 @@ const Dashboard: React.FC = () => {
     </div>
   );
 };
-};
+
+export default Dashboard;
 
 export default Dashboard;
