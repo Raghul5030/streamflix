@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
 import {
   Play,
   Pause,
@@ -12,94 +14,81 @@ import {
   SkipForward,
   Settings,
   X,
+  ArrowLeft,
+  Loader2,
 } from "lucide-react";
+import {
+  fetchMovieTrailers,
+  fetchTVTrailers,
+  getBestTrailer,
+  getYouTubeEmbedUrl,
+  VideoTrailer,
+} from "@/lib/video";
+import { Movie, TVShow } from "@/lib/tmdb";
 import { cn } from "@/lib/utils";
 
 interface VideoPlayerProps {
-  title: string;
-  description?: string;
-  posterUrl?: string;
+  item: Movie | TVShow;
   onClose: () => void;
+  onBack?: () => void;
   className?: string;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
-  title,
-  description,
-  posterUrl,
+  item,
   onClose,
+  onBack,
   className,
 }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState([75]);
-  const [currentTime, setCurrentTime] = useState([0]);
-  const [duration] = useState(7230); // Demo duration in seconds (2h 3m 30s)
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
-  const [isBuffering, setIsBuffering] = useState(false);
+  const [selectedTrailer, setSelectedTrailer] = useState<VideoTrailer | null>(
+    null,
+  );
 
   const playerRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
+  const title = "title" in item ? item.title : item.name;
+  const description = item.overview;
+
+  // Fetch trailers for the current item
+  const { data: trailers, isLoading: loadingTrailers } = useQuery({
+    queryKey: ["trailers", item.id, "title" in item ? "movie" : "tv"],
+    queryFn: async () => {
+      const apiKey = "b771da6ad545bff676e9d5f6bf07c87b";
+      if ("title" in item) {
+        return fetchMovieTrailers(item.id, apiKey);
+      } else {
+        return fetchTVTrailers(item.id, apiKey);
+      }
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+
+  // Select the best trailer when trailers are loaded
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying && !isBuffering) {
-      interval = setInterval(() => {
-        setCurrentTime((prev) => {
-          const newTime = prev[0] + 1;
-          return newTime >= duration ? [duration] : [newTime];
-        });
-      }, 1000);
+    if (trailers && trailers.length > 0) {
+      const bestTrailer = getBestTrailer(trailers);
+      setSelectedTrailer(bestTrailer);
     }
-    return () => clearInterval(interval);
-  }, [isPlaying, isBuffering, duration]);
-
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    }
-    return `${minutes}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const handlePlayPause = () => {
-    if (currentTime[0] >= duration) {
-      setCurrentTime([0]);
-    }
-    setIsPlaying(!isPlaying);
-    if (!isPlaying) {
-      // Simulate buffering
-      setIsBuffering(true);
-      setTimeout(() => setIsBuffering(false), 1500);
-    }
-  };
-
-  const handleTimeChange = (value: number[]) => {
-    setCurrentTime(value);
-  };
-
-  const handleVolumeChange = (value: number[]) => {
-    setVolume(value);
-    setIsMuted(value[0] === 0);
-  };
-
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-  };
+  }, [trailers]);
 
   const toggleFullscreen = () => {
+    if (!isFullscreen) {
+      if (playerRef.current?.requestFullscreen) {
+        playerRef.current.requestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
     setIsFullscreen(!isFullscreen);
   };
 
-  const skipBackward = () => {
-    setCurrentTime((prev) => [Math.max(0, prev[0] - 10)]);
-  };
-
-  const skipForward = () => {
-    setCurrentTime((prev) => [Math.min(duration, prev[0] + 10)]);
+  const handleTrailerSelect = (trailer: VideoTrailer) => {
+    setSelectedTrailer(trailer);
   };
 
   const handleMouseMove = () => {
@@ -131,40 +120,39 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         className,
       )}
       onMouseMove={handleMouseMove}
-      onMouseLeave={() => isPlaying && setShowControls(false)}
     >
-      {/* Video placeholder */}
-      <div className="relative w-full h-full bg-streaming-darker flex items-center justify-center">
-        {posterUrl ? (
-          <img
-            src={posterUrl}
-            alt={title}
-            className="w-full h-full object-cover"
+      {/* Video Content */}
+      <div className="relative w-full h-full">
+        {loadingTrailers ? (
+          // Loading state
+          <div className="w-full h-full bg-streaming-darker flex items-center justify-center">
+            <div className="text-center">
+              <Loader2 className="w-12 h-12 text-white animate-spin mx-auto mb-4" />
+              <p className="text-white">Loading video...</p>
+            </div>
+          </div>
+        ) : selectedTrailer ? (
+          // YouTube trailer embed
+          <iframe
+            src={getYouTubeEmbedUrl(selectedTrailer.key)}
+            title={selectedTrailer.name}
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
           />
         ) : (
-          <div className="text-center">
-            <Play className="w-16 h-16 text-white/50 mx-auto mb-4" />
-            <p className="text-white/50">Video Preview</p>
-          </div>
-        )}
-
-        {/* Loading/Buffering overlay */}
-        {isBuffering && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-          </div>
-        )}
-
-        {/* Play button overlay */}
-        {!isPlaying && !isBuffering && (
-          <Button
-            onClick={handlePlayPause}
-            className="absolute inset-0 bg-transparent hover:bg-black/20 w-full h-full flex items-center justify-center group"
-          >
-            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:bg-white/30 transition-all">
-              <Play className="w-10 h-10 text-white fill-white ml-1" />
+          // No trailer available
+          <div className="w-full h-full bg-streaming-darker flex items-center justify-center">
+            <div className="text-center max-w-md px-6">
+              <Play className="w-16 h-16 text-white/50 mx-auto mb-4" />
+              <h3 className="text-white text-lg font-semibold mb-2">
+                No Trailer Available
+              </h3>
+              <p className="text-white/70 text-sm">
+                Sorry, no video content is available for "{title}" at this time.
+              </p>
             </div>
-          </Button>
+          </div>
         )}
       </div>
 
@@ -172,16 +160,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <div
         className={cn(
           "absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50 transition-opacity duration-300",
-          showControls ? "opacity-100" : "opacity-0",
+          showControls || !selectedTrailer ? "opacity-100" : "opacity-0",
         )}
       >
         {/* Top bar */}
         <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between">
-          <div>
-            <h3 className="text-white font-semibold text-lg">{title}</h3>
-            {description && (
-              <p className="text-white/70 text-sm">{description}</p>
+          <div className="flex items-center gap-4">
+            {onBack && (
+              <Button
+                onClick={onBack}
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20 p-2 h-8 w-8"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
             )}
+            <div>
+              <h3 className="text-white font-semibold text-lg">{title}</h3>
+              {selectedTrailer && (
+                <p className="text-white/70 text-sm">{selectedTrailer.name}</p>
+              )}
+            </div>
           </div>
           <Button
             onClick={onClose}
@@ -193,105 +193,47 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </Button>
         </div>
 
-        {/* Center controls */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={skipBackward}
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/20 p-3 h-12 w-12"
-            >
-              <SkipBack className="w-6 h-6" />
-            </Button>
-
-            <Button
-              onClick={handlePlayPause}
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/20 p-4 h-16 w-16"
-            >
-              {isPlaying ? (
-                <Pause className="w-8 h-8" />
-              ) : (
-                <Play className="w-8 h-8 fill-white ml-1" />
-              )}
-            </Button>
-
-            <Button
-              onClick={skipForward}
-              variant="ghost"
-              size="sm"
-              className="text-white hover:bg-white/20 p-3 h-12 w-12"
-            >
-              <SkipForward className="w-6 h-6" />
-            </Button>
+        {/* Trailer selection */}
+        {trailers && trailers.length > 1 && (
+          <div className="absolute bottom-16 left-4 right-4">
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {trailers.slice(0, 5).map((trailer) => (
+                <Button
+                  key={trailer.id}
+                  onClick={() => handleTrailerSelect(trailer)}
+                  variant={
+                    selectedTrailer?.id === trailer.id ? "default" : "outline"
+                  }
+                  size="sm"
+                  className={cn(
+                    "flex-shrink-0",
+                    selectedTrailer?.id === trailer.id
+                      ? "bg-netflix-600 hover:bg-netflix-700 text-white"
+                      : "border-white/30 bg-white/10 text-white hover:bg-white/20",
+                  )}
+                >
+                  <Badge variant="secondary" className="mr-2 text-xs">
+                    {trailer.type}
+                  </Badge>
+                  {trailer.name}
+                </Button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Bottom controls */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
-          {/* Progress bar */}
-          <Slider
-            value={currentTime}
-            max={duration}
-            step={1}
-            onValueChange={handleTimeChange}
-            className="w-full"
-          />
-
-          {/* Control buttons */}
+        <div className="absolute bottom-0 left-0 right-0 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button
-                onClick={handlePlayPause}
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-white/20 p-2 h-8 w-8"
-              >
-                {isPlaying ? (
-                  <Pause className="w-4 h-4" />
-                ) : (
-                  <Play className="w-4 h-4 fill-white" />
-                )}
-              </Button>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={toggleMute}
-                  variant="ghost"
-                  size="sm"
-                  className="text-white hover:bg-white/20 p-2 h-8 w-8"
-                >
-                  {isMuted || volume[0] === 0 ? (
-                    <VolumeX className="w-4 h-4" />
-                  ) : (
-                    <Volume2 className="w-4 h-4" />
-                  )}
-                </Button>
-                <Slider
-                  value={isMuted ? [0] : volume}
-                  max={100}
-                  step={1}
-                  onValueChange={handleVolumeChange}
-                  className="w-20"
-                />
-              </div>
-
-              <div className="text-white text-sm">
-                {formatTime(currentTime[0])} / {formatTime(duration)}
-              </div>
+              {description && (
+                <p className="text-white/70 text-sm max-w-md line-clamp-2">
+                  {description}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-white/20 p-2 h-8 w-8"
-              >
-                <Settings className="w-4 h-4" />
-              </Button>
-
               <Button
                 onClick={toggleFullscreen}
                 variant="ghost"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/Header";
 import MovieCard from "@/components/movie/MovieCard";
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search as SearchIcon, Filter, X } from "lucide-react";
+import { Search as SearchIcon, Filter, X, ArrowLeft } from "lucide-react";
 import { tmdbClient, Movie, TVShow } from "@/lib/tmdb";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +17,7 @@ const Search: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<"all" | "movie" | "tv">(
     "all",
   );
+  const navigate = useNavigate();
 
   const {
     data: searchResults,
@@ -94,6 +95,19 @@ const Search: React.FC = () => {
 
       <div className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+          {/* Back Navigation */}
+          <div className="mb-6">
+            <Button
+              onClick={() => navigate(-1)}
+              variant="outline"
+              size="sm"
+              className="border-white/30 bg-white/10 text-white hover:bg-white/20"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          </div>
+
           {/* Search Section */}
           <div className="max-w-2xl mx-auto mb-8">
             <form onSubmit={handleSearch} className="relative mb-6">

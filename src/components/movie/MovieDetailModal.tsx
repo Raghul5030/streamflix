@@ -90,10 +90,9 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent className="max-w-6xl w-[95vw] h-[90vh] p-0 bg-black border-none">
           <VideoPlayer
-            title={title}
-            description={item.overview}
-            posterUrl={backdropUrl}
+            item={item}
             onClose={() => setShowPlayer(false)}
+            onBack={() => setShowPlayer(false)}
           />
         </DialogContent>
       </Dialog>
