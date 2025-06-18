@@ -104,6 +104,11 @@ const TVShows: React.FC = () => {
   const isLoading =
     loadingPopular || loadingTopRated || loadingOnTheAir || loadingSearch;
 
+  const handlePlayClick = (show: Movie | TVShow) => {
+    setSelectedShow(show);
+    setShowVideoPlayer(true);
+  };
+
   const LoadingSkeleton = () => (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
       {Array.from({ length: 18 }).map((_, index) => (
