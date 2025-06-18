@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import VideoDebugger from "./VideoDebugger";
 import {
   Play,
   Pause,
@@ -16,6 +17,7 @@ import {
   X,
   ArrowLeft,
   Loader2,
+  Bug,
 } from "lucide-react";
 import {
   fetchMovieTrailers,
@@ -45,6 +47,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [selectedTrailer, setSelectedTrailer] = useState<VideoTrailer | null>(
     null,
   );
+  const [showDebugger, setShowDebugger] = useState(false);
 
   const playerRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
@@ -160,33 +163,90 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </div>
           </div>
         ) : selectedTrailer ? (
-          // YouTube trailer embed
+          // YouTube trailer embed with enhanced functionality
           <div className="relative w-full h-full bg-black">
+            {/* Primary iframe */}
             <iframe
               key={selectedTrailer.key}
-              src={`https://www.youtube.com/embed/${selectedTrailer.key}?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&fs=1&cc_load_policy=0&iv_load_policy=3&autohide=0`}
+              src={`https://www.youtube.com/embed/${selectedTrailer.key}?autoplay=1&controls=1&rel=0&modestbranding=1&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`}
               title={selectedTrailer.name}
               className="w-full h-full border-0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
               frameBorder="0"
-              onLoad={() => console.log("YouTube iframe loaded")}
+              onLoad={() =>
+                console.log("YouTube iframe loaded for:", selectedTrailer.name)
+              }
               onError={(e) => console.error("YouTube iframe error:", e)}
             />
-            <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded z-10">
-              🎬 {selectedTrailer.name}
+
+            {/* Controls overlay */}
+            <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
+              <div className="bg-black/70 text-white text-sm px-3 py-2 rounded backdrop-blur-sm">
+                🎬 {selectedTrailer.name} ({selectedTrailer.type})
+              </div>
+              <div className="flex gap-2">
+                {/* YouTube direct link */}
+                <a
+                  href={`https://www.youtube.com/watch?v=${selectedTrailer.key}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+                >
+                  Watch on YouTube
+                </a>
+                {/* Refresh video */}
+                <Button
+                  onClick={() => {
+                    console.log("Refreshing video...");
+                    const iframe = document.querySelector(
+                      "iframe",
+                    ) as HTMLIFrameElement;
+                    if (iframe) {
+                      iframe.src = iframe.src;
+                    }
+                  }}
+                  size="sm"
+                  className="bg-black/70 hover:bg-black/90 text-white"
+                >
+                  Refresh
+                </Button>
+              </div>
             </div>
-            {/* Fallback link */}
-            <div className="absolute bottom-4 right-4 z-10">
-              <a
-                href={`https://www.youtube.com/watch?v=${selectedTrailer.key}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
-              >
-                Open in YouTube
-              </a>
+
+            {/* Video info overlay */}
+            <div className="absolute bottom-4 left-4 bg-black/70 text-white text-sm px-3 py-2 rounded backdrop-blur-sm">
+              <p className="font-medium">{title}</p>
+              <p className="text-xs text-gray-300">
+                Trailer • {selectedTrailer.site} •{" "}
+                {selectedTrailer.official ? "Official" : "Fan-made"}
+              </p>
             </div>
+
+            {/* Alternative trailers */}
+            {trailers && trailers.length > 1 && (
+              <div className="absolute bottom-4 right-4 z-10">
+                <select
+                  value={selectedTrailer.key}
+                  onChange={(e) => {
+                    const trailer = trailers.find(
+                      (t) => t.key === e.target.value,
+                    );
+                    if (trailer) {
+                      console.log("Switching to trailer:", trailer.name);
+                      setSelectedTrailer(trailer);
+                    }
+                  }}
+                  className="bg-black/70 text-white text-sm px-2 py-1 rounded border border-white/20"
+                >
+                  {trailers.slice(0, 5).map((trailer) => (
+                    <option key={trailer.key} value={trailer.key}>
+                      {trailer.name} ({trailer.type})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         ) : trailers && trailers.length === 0 ? (
           // No trailers found
@@ -300,6 +360,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
             <div className="flex items-center gap-2">
               <Button
+                onClick={() => setShowDebugger(true)}
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20 p-2 h-8 w-8"
+                title="Debug Video"
+              >
+                <Bug className="w-4 h-4" />
+              </Button>
+
+              <Button
                 onClick={toggleFullscreen}
                 variant="ghost"
                 size="sm"
@@ -315,6 +385,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Video Debugger */}
+      {showDebugger && (
+        <VideoDebugger
+          item={item}
+          trailers={trailers || []}
+          selectedTrailer={selectedTrailer}
+          onTrailerSelect={(trailer) => {
+            setSelectedTrailer(trailer);
+            setShowDebugger(false);
+          }}
+          isLoading={loadingTrailers}
+          error={trailersError}
+        />
+      )}
     </div>
   );
 };

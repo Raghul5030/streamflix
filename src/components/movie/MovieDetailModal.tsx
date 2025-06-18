@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import VideoPlayer from "@/components/player/VideoPlayer";
+import { useWishlist } from "@/contexts/WishlistContext";
 import {
   Play,
   Plus,
+  Check,
   ThumbsUp,
   ThumbsDown,
   Share,
@@ -36,8 +38,10 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({
   onClose,
 }) => {
   const [showPlayer, setShowPlayer] = useState(false);
-  const [isInList, setIsInList] = useState(false);
   const [userRating, setUserRating] = useState<"like" | "dislike" | null>(null);
+
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const isItemInWishlist = item ? isInWishlist(item.id) : false;
 
   if (!item) return null;
 
@@ -58,10 +62,19 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({
   };
 
   const handleAddToList = () => {
-    setIsInList(!isInList);
-    console.log(
-      isInList ? `Removed from list: ${title}` : `Added to list: ${title}`,
-    );
+    if (!item) return;
+
+    if (isItemInWishlist) {
+      const success = removeFromWishlist(item.id);
+      if (success) {
+        console.log(`Removed from wishlist: ${title}`);
+      }
+    } else {
+      const success = addToWishlist(item);
+      if (success) {
+        console.log(`Added to wishlist: ${title}`);
+      }
+    }
   };
 
   const handleRating = (rating: "like" | "dislike") => {
@@ -187,13 +200,17 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({
                     variant="outline"
                     className={cn(
                       "border-white/30 font-semibold",
-                      isInList
-                        ? "bg-netflix-600 text-white border-netflix-600"
+                      isItemInWishlist
+                        ? "bg-green-600 text-white border-green-600 hover:bg-green-700"
                         : "bg-white/20 text-white hover:bg-white/30",
                     )}
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    {isInList ? "In My List" : "Add to List"}
+                    {isItemInWishlist ? (
+                      <Check className="w-4 h-4 mr-2" />
+                    ) : (
+                      <Plus className="w-4 h-4 mr-2" />
+                    )}
+                    {isItemInWishlist ? "In My List" : "Add to List"}
                   </Button>
 
                   <div className="flex gap-2">
