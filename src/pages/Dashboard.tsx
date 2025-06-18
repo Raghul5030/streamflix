@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/Header";
 import MovieRow from "@/components/movie/MovieRow";
 import MovieCard from "@/components/movie/MovieCard";
+import InSiteVideoPlayer from "@/components/player/InSiteVideoPlayer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -15,6 +16,7 @@ const Dashboard: React.FC = () => {
   const [isMuted, setIsMuted] = useState(true);
   const [countdown, setCountdown] = useState(10);
   const [isAutoRotating, setIsAutoRotating] = useState(true);
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
 
   // Fetch data using React Query
   const {
@@ -59,11 +61,7 @@ const Dashboard: React.FC = () => {
 
   // Real-time auto-rotating featured content with countdown
   useEffect(() => {
-    if (
-      trendingMovies?.results &&
-      trendingMovies.results.length > 0 &&
-      !featuredItem
-    ) {
+    if (trendingMovies?.results && trendingMovies.results.length > 0 && !featuredItem) {
       // Set initial featured item
       const randomIndex = Math.floor(
         Math.random() * Math.min(5, trendingMovies.results.length),
@@ -83,7 +81,7 @@ const Dashboard: React.FC = () => {
           if (trendingMovies?.results && trendingMovies.results.length > 0) {
             const availableItems = trendingMovies.results.slice(0, 8);
             const currentIndex = availableItems.findIndex(
-              (item) => item.id === featuredItem?.id,
+              item => item.id === featuredItem?.id
             );
             const nextIndex = (currentIndex + 1) % availableItems.length;
             setFeaturedItem(availableItems[nextIndex]);
@@ -99,19 +97,7 @@ const Dashboard: React.FC = () => {
 
   const handlePlay = () => {
     if (featuredItem) {
-      const title =
-        "title" in featuredItem ? featuredItem.title : featuredItem.name;
-      console.log("Playing:", title);
-
-      // Open video directly in new tab for immediate playback
-      if (featuredItem.id) {
-        // Try to get trailer directly
-        const searchQuery = encodeURIComponent(`${title} official trailer`);
-        window.open(
-          `https://www.youtube.com/results?search_query=${searchQuery}`,
-          "_blank",
-        );
-      }
+      setShowVideoPlayer(true);
     }
   };
 
@@ -126,10 +112,7 @@ const Dashboard: React.FC = () => {
 
   const handleMoreInfo = () => {
     if (featuredItem) {
-      console.log(
-        "More info:",
-        "title" in featuredItem ? featuredItem.title : featuredItem.name,
-      );
+      setShowVideoPlayer(true);
     }
   };
 
@@ -246,22 +229,7 @@ const Dashboard: React.FC = () => {
               <Button
                 size="lg"
                 className="bg-white text-black hover:bg-gray-200 font-semibold text-lg px-8 transition-all hover:scale-105"
-                onClick={() => {
-                  if (featuredItem) {
-                    const title =
-                      "title" in featuredItem
-                        ? featuredItem.title
-                        : featuredItem.name;
-                    // Direct search for the specific movie/show trailer
-                    const searchQuery = encodeURIComponent(
-                      `${title} official trailer 2024`,
-                    );
-                    window.open(
-                      `https://www.youtube.com/results?search_query=${searchQuery}`,
-                      "_blank",
-                    );
-                  }
-                }}
+                onClick={handlePlay}
               >
                 <Play className="w-6 h-6 mr-2 fill-current" />
                 Play Trailer
@@ -285,49 +253,7 @@ const Dashboard: React.FC = () => {
               </Button>
             </div>
 
-            {/* Real-time controls */}
-            <div className="flex items-center gap-4 mt-6">
-              <div className="flex items-center gap-2 text-white/70 text-sm">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <span>Live • Next in {countdown}s</span>
-              </div>
-              <Button
-                onClick={() => {
-                  if (
-                    trendingMovies?.results &&
-                    trendingMovies.results.length > 0
-                  ) {
-                    const availableItems = trendingMovies.results.slice(0, 8);
-                    const currentIndex = availableItems.findIndex(
-                      (item) => item.id === featuredItem?.id,
-                    );
-                    const nextIndex =
-                      (currentIndex + 1) % availableItems.length;
-                    setFeaturedItem(availableItems[nextIndex]);
-                    setCountdown(10);
-                  }
-                }}
-                variant="outline"
-                size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 h-8"
-              >
-                <RotateCcw className="w-4 h-4 mr-1" />
-                Next
-              </Button>
-              <Button
-                onClick={() => setIsAutoRotating(!isAutoRotating)}
-                variant="outline"
-                size="sm"
-                className={cn(
-                  "border-white/30 text-white h-8",
-                  isAutoRotating
-                    ? "bg-green-600/20 border-green-600"
-                    : "bg-white/10 hover:bg-white/20",
-                )}
-              >
-                {isAutoRotating ? "Auto ON" : "Auto OFF"}
-              </Button>
-            </div>
+
           </div>
         </div>
 
@@ -395,12 +321,21 @@ const Dashboard: React.FC = () => {
           <MovieRow
             title="Documentaries"
             items={trendingMovies?.results?.slice(3, 13) || []}
-            isLoading={loadingTrending}
-          />
+          )}
         </div>
       </section>
+
+      {/* Video Player Modal */}
+      {featuredItem && (
+        <InSiteVideoPlayer
+          item={featuredItem}
+          isOpen={showVideoPlayer}
+          onClose={() => setShowVideoPlayer(false)}
+        />
+      )}
     </div>
   );
+};
 };
 
 export default Dashboard;
