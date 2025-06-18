@@ -323,6 +323,15 @@ const TVShows: React.FC = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Video Player Modal */}
+      {selectedShow && (
+        <InSiteVideoPlayer
+          item={selectedShow}
+          isOpen={showVideoPlayer}
+          onClose={() => setShowVideoPlayer(false)}
+        />
+      )}
     </div>
   );
 };
