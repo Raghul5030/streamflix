@@ -53,6 +53,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({
     : "";
 
   const handlePlay = () => {
+    console.log("Opening video player for:", title, item);
     setShowPlayer(true);
   };
 

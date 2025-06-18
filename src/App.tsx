@@ -15,6 +15,7 @@ import Movies from "./pages/Movies";
 import TVShows from "./pages/TVShows";
 import MyList from "./pages/MyList";
 import Search from "./pages/Search";
+import VideoPlayerPage from "./pages/VideoPlayer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -78,6 +79,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Search />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/watch"
+              element={
+                <ProtectedRoute>
+                  <VideoPlayerPage />
                 </ProtectedRoute>
               }
             />

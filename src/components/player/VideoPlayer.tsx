@@ -53,14 +53,24 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const description = item.overview;
 
   // Fetch trailers for the current item
-  const { data: trailers, isLoading: loadingTrailers } = useQuery({
+  const {
+    data: trailers,
+    isLoading: loadingTrailers,
+    error: trailersError,
+  } = useQuery({
     queryKey: ["trailers", item.id, "title" in item ? "movie" : "tv"],
     queryFn: async () => {
       const apiKey = "b771da6ad545bff676e9d5f6bf07c87b";
+      console.log(`Fetching trailers for ${title} (ID: ${item.id})`);
+
       if ("title" in item) {
-        return fetchMovieTrailers(item.id, apiKey);
+        const result = await fetchMovieTrailers(item.id, apiKey);
+        console.log("Movie trailers:", result);
+        return result;
       } else {
-        return fetchTVTrailers(item.id, apiKey);
+        const result = await fetchTVTrailers(item.id, apiKey);
+        console.log("TV trailers:", result);
+        return result;
       }
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
@@ -70,9 +80,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   useEffect(() => {
     if (trailers && trailers.length > 0) {
       const bestTrailer = getBestTrailer(trailers);
+      console.log("Selected trailer:", bestTrailer);
       setSelectedTrailer(bestTrailer);
+    } else if (trailers && trailers.length === 0) {
+      console.log("No trailers found for", title);
     }
-  }, [trailers]);
+  }, [trailers, title]);
 
   const toggleFullscreen = () => {
     if (!isFullscreen) {
@@ -128,28 +141,68 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <div className="w-full h-full bg-streaming-darker flex items-center justify-center">
             <div className="text-center">
               <Loader2 className="w-12 h-12 text-white animate-spin mx-auto mb-4" />
-              <p className="text-white">Loading video...</p>
+              <p className="text-white">Loading trailers for {title}...</p>
+              <p className="text-white/70 text-sm mt-2">Movie ID: {item.id}</p>
+            </div>
+          </div>
+        ) : trailersError ? (
+          // Error state
+          <div className="w-full h-full bg-streaming-darker flex items-center justify-center">
+            <div className="text-center max-w-md px-6">
+              <Play className="w-16 h-16 text-red-500 mx-auto mb-4" />
+              <h3 className="text-white text-lg font-semibold mb-2">
+                Error Loading Video
+              </h3>
+              <p className="text-white/70 text-sm mb-4">
+                Failed to load video content for "{title}". Please try again.
+              </p>
+              <p className="text-red-400 text-xs">
+                Error: {trailersError.message}
+              </p>
             </div>
           </div>
         ) : selectedTrailer ? (
           // YouTube trailer embed
-          <iframe
-            src={getYouTubeEmbedUrl(selectedTrailer.key)}
-            title={selectedTrailer.name}
-            className="w-full h-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        ) : (
-          // No trailer available
+          <div className="relative w-full h-full">
+            <iframe
+              src={getYouTubeEmbedUrl(selectedTrailer.key)}
+              title={selectedTrailer.name}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              loading="eager"
+            />
+            <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded">
+              Playing: {selectedTrailer.name}
+            </div>
+          </div>
+        ) : trailers && trailers.length === 0 ? (
+          // No trailers found
           <div className="w-full h-full bg-streaming-darker flex items-center justify-center">
             <div className="text-center max-w-md px-6">
               <Play className="w-16 h-16 text-white/50 mx-auto mb-4" />
               <h3 className="text-white text-lg font-semibold mb-2">
-                No Trailer Available
+                No Trailers Available
+              </h3>
+              <p className="text-white/70 text-sm mb-4">
+                No video trailers are available for "{title}" at this time.
+              </p>
+              <p className="text-white/50 text-xs">
+                Movie ID: {item.id} | Type:{" "}
+                {"title" in item ? "Movie" : "TV Show"}
+              </p>
+            </div>
+          </div>
+        ) : (
+          // Fallback state
+          <div className="w-full h-full bg-streaming-darker flex items-center justify-center">
+            <div className="text-center max-w-md px-6">
+              <Play className="w-16 h-16 text-white/50 mx-auto mb-4" />
+              <h3 className="text-white text-lg font-semibold mb-2">
+                Loading Video Content
               </h3>
               <p className="text-white/70 text-sm">
-                Sorry, no video content is available for "{title}" at this time.
+                Preparing video for "{title}"...
               </p>
             </div>
           </div>
