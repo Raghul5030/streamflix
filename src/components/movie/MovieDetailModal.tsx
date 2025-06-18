@@ -9,7 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import VideoPlayer from "@/components/player/VideoPlayer";
+import SimpleVideoPlayer from "@/components/player/SimpleVideoPlayer";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useQuery } from "@tanstack/react-query";
+import { fetchMovieTrailers, fetchTVTrailers } from "@/lib/video";
 import {
   Play,
   Plus,
@@ -39,9 +42,26 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({
 }) => {
   const [showPlayer, setShowPlayer] = useState(false);
   const [userRating, setUserRating] = useState<"like" | "dislike" | null>(null);
+  const [useSimplePlayer, setUseSimplePlayer] = useState(true); // Use simple player by default
 
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const isItemInWishlist = item ? isInWishlist(item.id) : false;
+
+  // Fetch trailers for this item
+  const { data: trailers } = useQuery({
+    queryKey: ["trailers", item?.id, "title" in (item || {}) ? "movie" : "tv"],
+    queryFn: async () => {
+      if (!item) return [];
+      const apiKey = "b771da6ad545bff676e9d5f6bf07c87b";
+      if ("title" in item) {
+        return fetchMovieTrailers(item.id, apiKey);
+      } else {
+        return fetchTVTrailers(item.id, apiKey);
+      }
+    },
+    enabled: !!item,
+    staleTime: 10 * 60 * 1000,
+  });
 
   if (!item) return null;
 
@@ -103,11 +123,20 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({
     return (
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent className="max-w-6xl w-[95vw] h-[90vh] p-0 bg-black border-none">
-          <VideoPlayer
-            item={item}
-            onClose={() => setShowPlayer(false)}
-            onBack={() => setShowPlayer(false)}
-          />
+          {useSimplePlayer ? (
+            <SimpleVideoPlayer
+              item={item}
+              trailers={trailers || []}
+              onClose={() => setShowPlayer(false)}
+              onBack={() => setShowPlayer(false)}
+            />
+          ) : (
+            <VideoPlayer
+              item={item}
+              onClose={() => setShowPlayer(false)}
+              onBack={() => setShowPlayer(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     );

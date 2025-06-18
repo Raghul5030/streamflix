@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Plus, Check, ThumbsUp, Info } from "lucide-react";
 import { Movie, TVShow, TMDBClient } from "@/lib/tmdb";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { showWishlistToast } from "@/lib/toast-utils";
 import MovieDetailModal from "./MovieDetailModal";
 import { cn } from "@/lib/utils";
 
@@ -58,12 +59,16 @@ const MovieCard: React.FC<MovieCardProps> = ({
     if (isItemInWishlist) {
       const success = removeFromWishlist(item.id);
       if (success) {
-        console.log(`Removed from wishlist: ${title}`);
+        showWishlistToast.removed(item);
+      } else {
+        showWishlistToast.error("remove");
       }
     } else {
       const success = addToWishlist(item);
       if (success) {
-        console.log(`Added to wishlist: ${title}`);
+        showWishlistToast.added(item);
+      } else {
+        showWishlistToast.error("add");
       }
     }
   };

@@ -163,88 +163,92 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             </div>
           </div>
         ) : selectedTrailer ? (
-          // YouTube trailer embed with enhanced functionality
+          // Multi-option video player
           <div className="relative w-full h-full bg-black">
-            {/* Primary iframe */}
-            <iframe
-              key={selectedTrailer.key}
-              src={`https://www.youtube.com/embed/${selectedTrailer.key}?autoplay=1&controls=1&rel=0&modestbranding=1&enablejsapi=1&origin=${encodeURIComponent(window.location.origin)}`}
-              title={selectedTrailer.name}
-              className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-              allowFullScreen
-              frameBorder="0"
-              onLoad={() =>
-                console.log("YouTube iframe loaded for:", selectedTrailer.name)
-              }
-              onError={(e) => console.error("YouTube iframe error:", e)}
-            />
+            {/* Option 1: Direct YouTube iframe (most compatible) */}
+            <div className="absolute inset-0">
+              <iframe
+                key={`yt-${selectedTrailer.key}`}
+                src={`https://www.youtube-nocookie.com/embed/${selectedTrailer.key}?autoplay=1&controls=1&rel=0&modestbranding=1&fs=1`}
+                title={selectedTrailer.name}
+                className="w-full h-full border-0"
+                allow="autoplay; encrypted-media; fullscreen"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
+            </div>
 
-            {/* Controls overlay */}
-            <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
-              <div className="bg-black/70 text-white text-sm px-3 py-2 rounded backdrop-blur-sm">
-                🎬 {selectedTrailer.name} ({selectedTrailer.type})
+            {/* Fallback poster with play button */}
+            <div
+              className="absolute inset-0 bg-black/50 flex items-center justify-center group cursor-pointer"
+              onClick={() =>
+                window.open(
+                  `https://www.youtube.com/watch?v=${selectedTrailer.key}`,
+                  "_blank",
+                )
+              }
+            >
+              <div className="text-center">
+                <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-red-700 transition-colors">
+                  <Play className="w-10 h-10 text-white fill-white ml-1" />
+                </div>
+                <h3 className="text-white text-lg font-semibold mb-2">
+                  {selectedTrailer.name}
+                </h3>
+                <p className="text-white/70 text-sm mb-4">
+                  Click to watch trailer
+                </p>
+                <Badge variant="destructive" className="bg-red-600">
+                  {selectedTrailer.type} • {selectedTrailer.site}
+                </Badge>
               </div>
-              <div className="flex gap-2">
-                {/* YouTube direct link */}
+            </div>
+
+            {/* Video controls overlay */}
+            <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-20 pointer-events-none">
+              <div className="bg-black/90 text-white text-sm px-3 py-2 rounded backdrop-blur-sm pointer-events-auto">
+                🎬 {selectedTrailer.name}
+              </div>
+              <div className="flex gap-2 pointer-events-auto">
                 <a
                   href={`https://www.youtube.com/watch?v=${selectedTrailer.key}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
                 >
-                  Watch on YouTube
+                  Open YouTube
                 </a>
-                {/* Refresh video */}
-                <Button
-                  onClick={() => {
-                    console.log("Refreshing video...");
-                    const iframe = document.querySelector(
-                      "iframe",
-                    ) as HTMLIFrameElement;
-                    if (iframe) {
-                      iframe.src = iframe.src;
-                    }
-                  }}
-                  size="sm"
-                  className="bg-black/70 hover:bg-black/90 text-white"
-                >
-                  Refresh
-                </Button>
               </div>
             </div>
 
-            {/* Video info overlay */}
-            <div className="absolute bottom-4 left-4 bg-black/70 text-white text-sm px-3 py-2 rounded backdrop-blur-sm">
-              <p className="font-medium">{title}</p>
-              <p className="text-xs text-gray-300">
-                Trailer • {selectedTrailer.site} •{" "}
-                {selectedTrailer.official ? "Official" : "Fan-made"}
-              </p>
-            </div>
-
-            {/* Alternative trailers */}
+            {/* Trailer selector */}
             {trailers && trailers.length > 1 && (
-              <div className="absolute bottom-4 right-4 z-10">
-                <select
-                  value={selectedTrailer.key}
-                  onChange={(e) => {
-                    const trailer = trailers.find(
-                      (t) => t.key === e.target.value,
-                    );
-                    if (trailer) {
-                      console.log("Switching to trailer:", trailer.name);
-                      setSelectedTrailer(trailer);
-                    }
-                  }}
-                  className="bg-black/70 text-white text-sm px-2 py-1 rounded border border-white/20"
-                >
-                  {trailers.slice(0, 5).map((trailer) => (
-                    <option key={trailer.key} value={trailer.key}>
-                      {trailer.name} ({trailer.type})
-                    </option>
-                  ))}
-                </select>
+              <div className="absolute bottom-20 left-4 right-4 z-20">
+                <div className="bg-black/90 rounded p-3 backdrop-blur-sm">
+                  <p className="text-white text-sm mb-2">Available Trailers:</p>
+                  <div className="flex gap-2 overflow-x-auto">
+                    {trailers.slice(0, 5).map((trailer) => (
+                      <Button
+                        key={trailer.key}
+                        onClick={() => setSelectedTrailer(trailer)}
+                        variant={
+                          selectedTrailer.key === trailer.key
+                            ? "default"
+                            : "outline"
+                        }
+                        size="sm"
+                        className={cn(
+                          "flex-shrink-0 text-xs",
+                          selectedTrailer.key === trailer.key
+                            ? "bg-red-600 hover:bg-red-700 text-white"
+                            : "border-white/30 bg-white/10 text-white hover:bg-white/20",
+                        )}
+                      >
+                        {trailer.type}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
