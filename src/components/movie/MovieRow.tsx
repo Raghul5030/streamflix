@@ -18,6 +18,7 @@ const MovieRow: React.FC<MovieRowProps> = ({
   items,
   isLoading = false,
   className,
+  onPlayClick,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
