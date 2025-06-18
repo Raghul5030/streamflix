@@ -25,7 +25,7 @@ import {
   Calendar,
   Tv,
 } from "lucide-react";
-import { tmdbClient } from "@/lib/tmdb";
+import { tmdbClient, Movie, TVShow } from "@/lib/tmdb";
 
 const TVShows: React.FC = () => {
   const navigate = useNavigate();
@@ -34,6 +34,8 @@ const TVShows: React.FC = () => {
     "popular",
   );
   const [filterBy, setFilterBy] = useState<"all" | "2024" | "2023">("all");
+  const [selectedShow, setSelectedShow] = useState<Movie | TVShow | null>(null);
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
 
   // Fetch different TV show categories
   const { data: popularTVShows, isLoading: loadingPopular } = useQuery({
