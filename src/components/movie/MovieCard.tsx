@@ -14,6 +14,7 @@ interface MovieCardProps {
   size?: "small" | "medium" | "large";
   showDetails?: boolean;
   className?: string;
+  onPlayClick?: (item: Movie | TVShow) => void;
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({
