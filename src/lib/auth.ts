@@ -17,6 +17,29 @@ class AuthService {
   private static readonly STORAGE_KEY = "streaming_auth";
   private static readonly USERS_KEY = "streaming_users";
 
+  constructor() {
+    this.seedDemoUser();
+  }
+
+  // Seed demo user for easier testing
+  private seedDemoUser(): void {
+    const users = this.getUsers();
+    const demoUserExists = users.some(
+      (user) => user.email === "demo@streamflix.com",
+    );
+
+    if (!demoUserExists) {
+      const demoUser: User = {
+        id: "demo-user-id",
+        email: "demo@streamflix.com",
+        name: "Demo User",
+        createdAt: new Date(),
+      };
+      users.push(demoUser);
+      this.saveUsers(users);
+    }
+  }
+
   // Get current user from localStorage
   getCurrentUser(): User | null {
     try {

@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Movies from "./pages/Movies";
 import TVShows from "./pages/TVShows";
 import MyList from "./pages/MyList";
+import Search from "./pages/Search";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -21,6 +22,7 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
       retry: 1,
+      refetchOnWindowFocus: false,
     },
   },
 });
@@ -68,6 +70,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MyList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/search"
+              element={
+                <ProtectedRoute>
+                  <Search />
                 </ProtectedRoute>
               }
             />

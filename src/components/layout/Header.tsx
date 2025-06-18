@@ -45,9 +45,9 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // In a real app, this would navigate to search results
-      console.log("Searching for:", searchQuery);
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
+      setIsMobileMenuOpen(false);
     }
   };
 
@@ -112,6 +112,17 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
                 <Search className="w-4 h-4" />
               </Button>
             </form>
+
+            {/* Search button for mobile */}
+            <Link to="/search" className="sm:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-streaming-gray-light hover:text-white p-2 h-8 w-8"
+              >
+                <Search className="w-5 h-5" />
+              </Button>
+            </Link>
 
             {/* Notifications */}
             <Button
