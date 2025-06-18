@@ -195,4 +195,5 @@ class TMDBClient {
 }
 
 export const tmdbClient = new TMDBClient();
+export { TMDBClient };
 export default TMDBClient;
