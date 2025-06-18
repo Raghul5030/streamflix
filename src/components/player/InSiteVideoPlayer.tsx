@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Play,
   X,
@@ -74,6 +74,7 @@ const InSiteVideoPlayer: React.FC<InSiteVideoPlayerProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl w-[95vw] h-[90vh] p-0 bg-black border-none">
+        <DialogTitle className="sr-only">{title} - Video Player</DialogTitle>
         <div className="relative w-full h-full bg-black overflow-hidden">
           {/* Background Image */}
           {!isPlaying && backdropUrl && (
