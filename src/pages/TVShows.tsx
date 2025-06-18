@@ -264,6 +264,7 @@ const TVShows: React.FC = () => {
                       item={show}
                       size="medium"
                       className="w-full"
+                      onPlayClick={handlePlayClick}
                     />
                   ))}
                 </div>
