@@ -262,6 +262,7 @@ const Movies: React.FC = () => {
                       item={movie}
                       size="medium"
                       className="w-full"
+                      onPlayClick={handlePlayClick}
                     />
                   ))}
                 </div>
