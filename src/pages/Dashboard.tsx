@@ -3,15 +3,23 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/Header";
 import MovieRow from "@/components/movie/MovieRow";
 import InSiteVideoPlayer from "@/components/player/InSiteVideoPlayer";
+import MovieDetailModal from "@/components/movie/MovieDetailModal";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { showWishlistToast } from "@/lib/toast-utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Plus, Info, Volume2, VolumeX } from "lucide-react";
+import { Play, Plus, Check, Info, Volume2, VolumeX } from "lucide-react";
 import { tmdbClient, Movie, TVShow, TMDBClient } from "@/lib/tmdb";
+import { cn } from "@/lib/utils";
 
 const Dashboard: React.FC = () => {
   const [featuredItem, setFeaturedItem] = useState<Movie | TVShow | null>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [showVideoPlayer, setShowVideoPlayer] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // Wishlist functionality
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   // Fetch data using React Query
   const {
@@ -59,17 +67,30 @@ const Dashboard: React.FC = () => {
   };
 
   const handleAddToList = () => {
-    if (featuredItem) {
-      console.log(
-        "Added to list:",
-        "title" in featuredItem ? featuredItem.title : featuredItem.name,
-      );
+    if (!featuredItem) return;
+
+    const isCurrentlyInWishlist = isInWishlist(featuredItem.id);
+
+    if (isCurrentlyInWishlist) {
+      const success = removeFromWishlist(featuredItem.id);
+      if (success) {
+        showWishlistToast.removed(featuredItem);
+      } else {
+        showWishlistToast.error("remove");
+      }
+    } else {
+      const success = addToWishlist(featuredItem);
+      if (success) {
+        showWishlistToast.added(featuredItem);
+      } else {
+        showWishlistToast.error("add");
+      }
     }
   };
 
   const handleMoreInfo = () => {
     if (featuredItem) {
-      setShowVideoPlayer(true);
+      setShowDetailModal(true);
     }
   };
 
@@ -184,10 +205,19 @@ const Dashboard: React.FC = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white/30 bg-white/20 text-white hover:bg-white/30 font-semibold px-4"
+                className={cn(
+                  "font-semibold px-4",
+                  featuredItem && isInWishlist(featuredItem.id)
+                    ? "border-green-600 bg-green-600 text-white hover:bg-green-700"
+                    : "border-white/30 bg-white/20 text-white hover:bg-white/30",
+                )}
                 onClick={handleAddToList}
               >
-                <Plus className="w-6 h-6" />
+                {featuredItem && isInWishlist(featuredItem.id) ? (
+                  <Check className="w-6 h-6" />
+                ) : (
+                  <Plus className="w-6 h-6" />
+                )}
               </Button>
             </div>
           </div>
@@ -251,6 +281,13 @@ const Dashboard: React.FC = () => {
           onClose={() => setShowVideoPlayer(false)}
         />
       )}
+
+      {/* Movie Detail Modal */}
+      <MovieDetailModal
+        item={featuredItem}
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+      />
     </div>
   );
 };
