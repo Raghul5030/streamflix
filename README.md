@@ -1,98 +1,268 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# StreamFlix - Netflix-like Streaming Platform
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A modern, production-ready streaming platform built with React, TypeScript, and TailwindCSS. Features user authentication, movie/TV show browsing, search functionality, and a beautiful Netflix-inspired dark theme.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🎬 Features
 
-## Description
+### Authentication
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Sign Up/Sign In**: Complete user registration and login system
+- **Protected Routes**: Secure access to authenticated content
+- **Demo User**: Pre-seeded demo account for easy testing
+- **Persistent Sessions**: Stay logged in across browser sessions
 
-## Project setup
+### Content Discovery
 
-```bash
-$ npm install
+- **TMDB Integration**: Real movie and TV show data from The Movie Database
+- **Trending Content**: Latest trending movies and shows
+- **Multiple Categories**: Popular, top-rated, upcoming content
+- **Search Functionality**: Advanced search with filters
+- **Movie Details**: Comprehensive information with ratings, overview, and metadata
+
+### User Interface
+
+- **Netflix-inspired Design**: Modern dark theme with red accents
+- **Responsive Layout**: Optimized for desktop, tablet, and mobile
+- **Interactive Components**: Hover effects, animations, and smooth transitions
+- **Video Player**: Full-featured player with controls (demo)
+- **Modal System**: Detailed movie/show information modals
+
+### Real-time Features
+
+- **Live Search**: Instant search results as you type
+- **Dynamic Content**: Real-time data fetching with React Query
+- **Interactive Cards**: Like, add to list, and play functionality
+- **User Preferences**: Personal watchlist and ratings
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 16+
+- npm, yarn, or pnpm
+- TMDB API Key (free from [The Movie Database](https://www.themoviedb.org/settings/api))
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd streamflix
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
+
+3. **Set up TMDB API Key**
+
+   - Get a free API key from [TMDB](https://www.themoviedb.org/settings/api)
+   - Open `src/lib/tmdb.ts`
+   - Replace the empty `TMDB_API_KEY` with your API key:
+
+   ```typescript
+   const TMDB_API_KEY = "your_api_key_here";
+   ```
+
+4. **Start the development server**
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
+
+5. **Open your browser**
+   - Navigate to `http://localhost:5173`
+   - Use the demo credentials or create a new account
+
+## 🎭 Demo Credentials
+
+For quick testing, use these demo credentials:
+
+- **Email**: `demo@streamflix.com`
+- **Password**: Any password (demo purposes)
+
+## 🛠 Tech Stack
+
+### Core Technologies
+
+- **React 18**: Modern React with hooks and context
+- **TypeScript**: Type-safe development
+- **Vite**: Fast build tool and dev server
+- **React Router 6**: Client-side routing
+
+### Styling & UI
+
+- **TailwindCSS 3**: Utility-first CSS framework
+- **Radix UI**: Accessible component primitives
+- **Lucide React**: Beautiful icons
+- **Class Variance Authority**: Component variant management
+- **Custom Design System**: Netflix-inspired dark theme
+
+### State Management & Data
+
+- **React Query**: Server state management and caching
+- **Context API**: Global authentication state
+- **LocalStorage**: Persistent user data (demo purposes)
+
+### API Integration
+
+- **TMDB API**: Real movie and TV show data
+- **Fetch API**: HTTP client for API calls
+- **Custom API Client**: Typed TMDB integration
+
+## 📱 Features Overview
+
+### Authentication System
+
+- Secure sign-up and sign-in flows
+- Form validation with error handling
+- Protected route component
+- Persistent authentication state
+- User profile management
+
+### Content Management
+
+- **Dashboard**: Hero section with featured content
+- **Movie Rows**: Horizontal scrollable content sections
+- **Search**: Advanced search with filtering
+- **Detail Modals**: Comprehensive movie/show information
+- **Video Player**: Full-featured player component (demo)
+
+### User Experience
+
+- **Responsive Design**: Works on all screen sizes
+- **Loading States**: Skeleton loading and spinners
+- **Error Handling**: Graceful error messages
+- **Animations**: Smooth transitions and hover effects
+- **Accessibility**: ARIA labels and keyboard navigation
+
+## 🎨 Design System
+
+### Color Palette
+
+- **Primary**: Netflix red (`#e50914`)
+- **Background**: Deep dark (`#0f0f0f`)
+- **Cards**: Dark gray (`#181818`)
+- **Text**: White and gray variants
+- **Accents**: Red gradient highlights
+
+### Typography
+
+- **Font Family**: Inter (Google Fonts)
+- **Weights**: 300-800 range
+- **Responsive sizing**: Scales with screen size
+
+### Components
+
+- Consistent spacing and sizing
+- Hover and focus states
+- Modern card designs
+- Interactive buttons and forms
+
+## 🔧 Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── auth/           # Authentication components
+│   ├── layout/         # Layout components (Header, etc.)
+│   ├── movie/          # Movie-related components
+│   ├── player/         # Video player components
+│   └── ui/             # Base UI components (Radix-based)
+├── contexts/           # React contexts
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions and API clients
+├── pages/              # Page components
+│   └── Auth/           # Authentication pages
+└── App.tsx             # Main application component
 ```
 
-## Compile and run the project
+## 🚦 Available Scripts
 
-```bash
-# development
-$ npm run start
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run test` - Run tests
+- `npm run typecheck` - Type checking
+- `npm run format.fix` - Format code with Prettier
 
-# watch mode
-$ npm run start:dev
+## 🌟 Key Features Deep Dive
 
-# production mode
-$ npm run start:prod
-```
+### Movie Discovery
 
-## Run tests
+- **Trending**: Real-time trending content
+- **Categories**: Multiple content categories
+- **Search**: Full-text search with type-ahead
+- **Filters**: Filter by movies, TV shows, or all content
+- **Recommendations**: Similar content suggestions
 
-```bash
-# unit tests
-$ npm run test
+### Interactive Elements
 
-# e2e tests
-$ npm run test:e2e
+- **Play Buttons**: Video playback (demo implementation)
+- **Add to List**: Personal watchlist management
+- **Like/Dislike**: Content rating system
+- **Share**: Social sharing capabilities
+- **Download**: Offline viewing options (demo)
 
-# test coverage
-$ npm run test:cov
-```
+### Responsive Design
 
-## Deployment
+- **Mobile-first**: Optimized for mobile devices
+- **Tablet**: Perfect tablet experience
+- **Desktop**: Full desktop functionality
+- **Touch-friendly**: Large touch targets
+- **Gesture support**: Swipe and scroll interactions
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 🔐 Security Features
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- **Form Validation**: Client-side input validation
+- **XSS Protection**: Safe content rendering
+- **Route Protection**: Authentication-required routes
+- **Data Sanitization**: Clean user inputs
+- **Error Boundaries**: Graceful error handling
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+## 🚀 Production Deployment
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+The application is production-ready with:
 
-## Resources
+- **Build Optimization**: Minified and optimized bundles
+- **Code Splitting**: Lazy loading for better performance
+- **Caching Strategy**: Proper cache headers
+- **Error Monitoring**: Error boundary implementation
+- **Performance**: Optimized images and assets
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🤝 Contributing
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
 
-## Support
+## 📄 License
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Stay in touch
+## 🙏 Acknowledgments
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- [The Movie Database (TMDB)](https://www.themoviedb.org/) for providing the movie data API
+- [Netflix](https://netflix.com) for design inspiration
+- [Radix UI](https://www.radix-ui.com/) for accessible component primitives
+- [TailwindCSS](https://tailwindcss.com/) for the utility-first CSS framework
 
-## License
+## 📞 Support
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+For support, email support@streamflix.com or create an issue in this repository.
+
+---
+
+Built with ❤️ using React, TypeScript, and TailwindCSS
