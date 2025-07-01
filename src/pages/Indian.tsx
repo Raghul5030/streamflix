@@ -24,6 +24,9 @@ const Indian: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<
+    "popular" | "newest" | "oldest" | "rating"
+  >("popular");
   const [selectedContent, setSelectedContent] = useState<Movie | TVShow | null>(
     null,
   );
