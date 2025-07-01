@@ -56,7 +56,7 @@ class TMDBClient {
     this.baseUrl = TMDB_BASE_URL;
   }
 
-  private async request<T>(
+  async request<T>(
     endpoint: string,
     params: Record<string, string> = {},
   ): Promise<T> {
