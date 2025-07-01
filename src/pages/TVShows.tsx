@@ -81,10 +81,15 @@ const TVShows: React.FC = () => {
     staleTime: 2 * 60 * 1000,
   });
 
-  // Get TV shows based on current sort
+  // Get TV shows based on current sort and region
   const getCurrentTVShows = () => {
     if (searchQuery.trim()) {
       return searchResults?.results || [];
+    }
+
+    if (regionFilter === "indian") {
+      // For Indian content, prioritize Indian TV shows
+      return indianTVShows?.results || popularTVShows?.results || [];
     }
 
     switch (sortBy) {
