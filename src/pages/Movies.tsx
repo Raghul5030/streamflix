@@ -196,8 +196,32 @@ const Movies: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
                 <Filter className="w-4 h-4 text-streaming-gray" />
-                <span className="text-streaming-gray-light">Sort by:</span>
+                <span className="text-streaming-gray-light">Filter:</span>
               </div>
+
+              {/* Region Filter */}
+              <Select
+                value={regionFilter}
+                onValueChange={(value: any) => setRegionFilter(value)}
+              >
+                <SelectTrigger className="w-36 bg-streaming-card border-streaming-card text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-streaming-card border-streaming-card">
+                  <SelectItem
+                    value="global"
+                    className="text-white hover:bg-streaming-darker"
+                  >
+                    🌍 Global
+                  </SelectItem>
+                  <SelectItem
+                    value="indian"
+                    className="text-white hover:bg-streaming-darker"
+                  >
+                    🇮🇳 Indian
+                  </SelectItem>
+                </SelectContent>
+              </Select>
 
               <Select
                 value={sortBy}
