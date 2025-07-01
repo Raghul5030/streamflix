@@ -14,6 +14,7 @@ import SignUp from "./pages/Auth/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Movies from "./pages/Movies";
 import TVShows from "./pages/TVShows";
+import Indian from "./pages/Indian";
 import MyList from "./pages/MyList";
 import Search from "./pages/Search";
 import VideoPlayerPage from "./pages/VideoPlayer";
