@@ -114,7 +114,18 @@ const TVShows: React.FC = () => {
 
     if (regionFilter === "indian") {
       // For Indian content, prioritize Indian TV shows
-      return indianTVShows?.results || popularTVShows?.results || [];
+      switch (sortBy) {
+        case "top_rated":
+          return topRatedTVShows?.results || [];
+        case "on_the_air":
+          return onTheAirTVShows?.results || [];
+        case "newest":
+          return newestTVShows?.results || [];
+        case "oldest":
+          return oldestTVShows?.results || [];
+        default:
+          return indianTVShows?.results || popularTVShows?.results || [];
+      }
     }
 
     switch (sortBy) {
@@ -122,6 +133,10 @@ const TVShows: React.FC = () => {
         return topRatedTVShows?.results || [];
       case "on_the_air":
         return onTheAirTVShows?.results || [];
+      case "newest":
+        return newestTVShows?.results || [];
+      case "oldest":
+        return oldestTVShows?.results || [];
       default:
         return popularTVShows?.results || [];
     }
