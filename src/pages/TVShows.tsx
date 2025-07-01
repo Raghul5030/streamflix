@@ -158,7 +158,12 @@ const TVShows: React.FC = () => {
 
   const filteredTVShows = getFilteredTVShows();
   const isLoading =
-    loadingPopular || loadingTopRated || loadingOnTheAir || loadingSearch;
+    loadingPopular ||
+    loadingTopRated ||
+    loadingOnTheAir ||
+    loadingNewest ||
+    loadingOldest ||
+    loadingSearch;
 
   const handlePlayClick = (show: Movie | TVShow) => {
     setSelectedShow(show);
