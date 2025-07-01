@@ -109,12 +109,22 @@ class TMDBClient {
     return this.request("/movie/top_rated", params);
   }
 
-  async getUpcomingMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
-    return this.request("/movie/upcoming", { page: page.toString() });
+  async getUpcomingMovies(
+    page: number = 1,
+    region?: string,
+  ): Promise<TMDBResponse<Movie>> {
+    const params: Record<string, string> = { page: page.toString() };
+    if (region) params.region = region;
+    return this.request("/movie/upcoming", params);
   }
 
-  async getNowPlayingMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
-    return this.request("/movie/now_playing", { page: page.toString() });
+  async getNowPlayingMovies(
+    page: number = 1,
+    region?: string,
+  ): Promise<TMDBResponse<Movie>> {
+    const params: Record<string, string> = { page: page.toString() };
+    if (region) params.region = region;
+    return this.request("/movie/now_playing", params);
   }
 
   async getMovieDetails(movieId: number): Promise<Movie> {
