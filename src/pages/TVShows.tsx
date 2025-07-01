@@ -73,6 +73,31 @@ const TVShows: React.FC = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Date-sorted TV shows
+  const { data: newestTVShows, isLoading: loadingNewest } = useQuery({
+    queryKey: ["newest-tv-shows", regionFilter],
+    queryFn: () =>
+      tmdbClient.request("/discover/tv", {
+        page: "1",
+        sort_by: "first_air_date.desc",
+        ...(regionFilter === "indian" ? { with_origin_country: "IN" } : {}),
+      }),
+    enabled: sortBy === "newest",
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: oldestTVShows, isLoading: loadingOldest } = useQuery({
+    queryKey: ["oldest-tv-shows", regionFilter],
+    queryFn: () =>
+      tmdbClient.request("/discover/tv", {
+        page: "1",
+        sort_by: "first_air_date.asc",
+        ...(regionFilter === "indian" ? { with_origin_country: "IN" } : {}),
+      }),
+    enabled: sortBy === "oldest",
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Search TV shows
   const { data: searchResults, isLoading: loadingSearch } = useQuery({
     queryKey: ["search-tv-shows", searchQuery],
