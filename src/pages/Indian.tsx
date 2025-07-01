@@ -131,12 +131,21 @@ const Indian: React.FC = () => {
     staleTime: 2 * 60 * 1000,
   });
 
-  // Get filtered content based on language selection
+  // Get filtered content based on language selection and sorting
   const getFilteredContent = () => {
     if (searchQuery.trim()) {
       return searchResults?.results || [];
     }
 
+    // If date sorting is active, use date-sorted results
+    if (sortBy === "newest") {
+      return newestIndianContent?.results || [];
+    }
+    if (sortBy === "oldest") {
+      return oldestIndianContent?.results || [];
+    }
+
+    // Default language-based filtering
     switch (selectedLanguage) {
       case "hi":
         return bollywoodMovies?.results || [];
