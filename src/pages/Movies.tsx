@@ -80,6 +80,35 @@ const Movies: React.FC = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Date-sorted movies
+  const { data: newestMovies, isLoading: loadingNewest } = useQuery({
+    queryKey: ["newest-movies", regionFilter],
+    queryFn: () =>
+      tmdbClient.request("/discover/movie", {
+        page: "1",
+        sort_by: "release_date.desc",
+        ...(regionFilter === "indian"
+          ? { region: "IN", with_origin_country: "IN" }
+          : {}),
+      }),
+    enabled: sortBy === "newest",
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: oldestMovies, isLoading: loadingOldest } = useQuery({
+    queryKey: ["oldest-movies", regionFilter],
+    queryFn: () =>
+      tmdbClient.request("/discover/movie", {
+        page: "1",
+        sort_by: "release_date.asc",
+        ...(regionFilter === "indian"
+          ? { region: "IN", with_origin_country: "IN" }
+          : {}),
+      }),
+    enabled: sortBy === "oldest",
+    staleTime: 5 * 60 * 1000,
+  });
+
   const { data: nowPlayingMovies, isLoading: loadingNowPlaying } = useQuery({
     queryKey: ["now-playing-movies"],
     queryFn: () => tmdbClient.getNowPlayingMovies(),
