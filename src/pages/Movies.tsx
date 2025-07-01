@@ -33,6 +33,9 @@ const Movies: React.FC = () => {
     "popular",
   );
   const [filterBy, setFilterBy] = useState<"all" | "2024" | "2023">("all");
+  const [regionFilter, setRegionFilter] = useState<"global" | "indian">(
+    "global",
+  );
   const [selectedMovie, setSelectedMovie] = useState<Movie | TVShow | null>(
     null,
   );
