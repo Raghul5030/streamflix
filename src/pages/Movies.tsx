@@ -136,6 +136,10 @@ const Movies: React.FC = () => {
           return topRatedMovies?.results || [];
         case "upcoming":
           return upcomingMovies?.results || [];
+        case "newest":
+          return newestMovies?.results || [];
+        case "oldest":
+          return oldestMovies?.results || [];
         default:
           return indianMovies?.results || popularMovies?.results || [];
       }
@@ -146,6 +150,10 @@ const Movies: React.FC = () => {
         return topRatedMovies?.results || [];
       case "upcoming":
         return upcomingMovies?.results || [];
+      case "newest":
+        return newestMovies?.results || [];
+      case "oldest":
+        return oldestMovies?.results || [];
       default:
         return popularMovies?.results || [];
     }
