@@ -29,9 +29,9 @@ import { tmdbClient, Movie, TVShow } from "@/lib/tmdb";
 const Movies: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"popular" | "top_rated" | "upcoming">(
-    "popular",
-  );
+  const [sortBy, setSortBy] = useState<
+    "popular" | "top_rated" | "upcoming" | "newest" | "oldest"
+  >("popular");
   const [filterBy, setFilterBy] = useState<"all" | "2024" | "2023">("all");
   const [regionFilter, setRegionFilter] = useState<"global" | "indian">(
     "global",
