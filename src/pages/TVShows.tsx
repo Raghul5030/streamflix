@@ -65,6 +65,14 @@ const TVShows: React.FC = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Indian TV Shows
+  const { data: indianTVShows, isLoading: loadingIndianTV } = useQuery({
+    queryKey: ["indian-tv-shows-page"],
+    queryFn: () => tmdbClient.getIndianTVShows(),
+    enabled: regionFilter === "indian",
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Search TV shows
   const { data: searchResults, isLoading: loadingSearch } = useQuery({
     queryKey: ["search-tv-shows", searchQuery],
