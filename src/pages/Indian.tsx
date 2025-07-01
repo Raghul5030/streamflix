@@ -86,6 +86,43 @@ const Indian: React.FC = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Date-sorted Indian content
+  const { data: newestIndianContent, isLoading: loadingNewest } = useQuery({
+    queryKey: ["newest-indian-content", selectedLanguage],
+    queryFn: () => {
+      const params: Record<string, string> = {
+        page: "1",
+        sort_by: "release_date.desc",
+        region: "IN",
+        with_origin_country: "IN",
+      };
+      if (selectedLanguage !== "all") {
+        params.with_original_language = selectedLanguage;
+      }
+      return tmdbClient.request("/discover/movie", params);
+    },
+    enabled: sortBy === "newest",
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: oldestIndianContent, isLoading: loadingOldest } = useQuery({
+    queryKey: ["oldest-indian-content", selectedLanguage],
+    queryFn: () => {
+      const params: Record<string, string> = {
+        page: "1",
+        sort_by: "release_date.asc",
+        region: "IN",
+        with_origin_country: "IN",
+      };
+      if (selectedLanguage !== "all") {
+        params.with_original_language = selectedLanguage;
+      }
+      return tmdbClient.request("/discover/movie", params);
+    },
+    enabled: sortBy === "oldest",
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Search Indian content
   const { data: searchResults, isLoading: loadingSearch } = useQuery({
     queryKey: ["search-indian", searchQuery],
