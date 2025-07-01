@@ -304,6 +304,35 @@ const Dashboard: React.FC = () => {
             isLoading={loadingTV}
             onPlayClick={handleRowItemPlay}
           />
+
+          {/* Indian Content Sections */}
+          <MovieRow
+            title="🔥 Trending in India"
+            items={trendingInIndia?.results || []}
+            isLoading={loadingTrendingIndia}
+            onPlayClick={handleRowItemPlay}
+          />
+
+          <MovieRow
+            title="🎬 Bollywood Blockbusters"
+            items={bollywoodMovies?.results || []}
+            isLoading={loadingBollywood}
+            onPlayClick={handleRowItemPlay}
+          />
+
+          <MovieRow
+            title="🎭 South Indian Cinema"
+            items={tamilMovies?.results || []}
+            isLoading={loadingTamil}
+            onPlayClick={handleRowItemPlay}
+          />
+
+          <MovieRow
+            title="📺 Indian TV Shows"
+            items={indianTVShows?.results || []}
+            isLoading={loadingIndianTV}
+            onPlayClick={handleRowItemPlay}
+          />
         </div>
       </section>
 
