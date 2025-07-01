@@ -50,6 +50,31 @@ const Dashboard: React.FC = () => {
     staleTime: 5 * 60 * 1000,
   });
 
+  // Indian Content
+  const { data: bollywoodMovies, isLoading: loadingBollywood } = useQuery({
+    queryKey: ["bollywood-movies"],
+    queryFn: () => tmdbClient.getBollywoodMovies(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: tamilMovies, isLoading: loadingTamil } = useQuery({
+    queryKey: ["tamil-movies"],
+    queryFn: () => tmdbClient.getTamilMovies(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: indianTVShows, isLoading: loadingIndianTV } = useQuery({
+    queryKey: ["indian-tv-shows"],
+    queryFn: () => tmdbClient.getIndianTVShows(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: trendingInIndia, isLoading: loadingTrendingIndia } = useQuery({
+    queryKey: ["trending-in-india"],
+    queryFn: () => tmdbClient.getTrendingInIndia("movie"),
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Set featured item from trending movies
   useEffect(() => {
     if (trendingMovies?.results && trendingMovies.results.length > 0) {
