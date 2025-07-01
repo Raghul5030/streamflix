@@ -43,20 +43,40 @@ const Movies: React.FC = () => {
 
   // Fetch different movie categories
   const { data: popularMovies, isLoading: loadingPopular } = useQuery({
-    queryKey: ["popular-movies-page"],
-    queryFn: () => tmdbClient.getPopularMovies(),
+    queryKey: ["popular-movies-page", regionFilter],
+    queryFn: () =>
+      tmdbClient.getPopularMovies(
+        1,
+        regionFilter === "indian" ? "IN" : undefined,
+      ),
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: topRatedMovies, isLoading: loadingTopRated } = useQuery({
-    queryKey: ["top-rated-movies-page"],
-    queryFn: () => tmdbClient.getTopRatedMovies(),
+    queryKey: ["top-rated-movies-page", regionFilter],
+    queryFn: () =>
+      tmdbClient.getTopRatedMovies(
+        1,
+        regionFilter === "indian" ? "IN" : undefined,
+      ),
     staleTime: 5 * 60 * 1000,
   });
 
   const { data: upcomingMovies, isLoading: loadingUpcoming } = useQuery({
-    queryKey: ["upcoming-movies-page"],
-    queryFn: () => tmdbClient.getUpcomingMovies(),
+    queryKey: ["upcoming-movies-page", regionFilter],
+    queryFn: () =>
+      tmdbClient.getUpcomingMovies(
+        1,
+        regionFilter === "indian" ? "IN" : undefined,
+      ),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Indian specific content
+  const { data: indianMovies, isLoading: loadingIndian } = useQuery({
+    queryKey: ["indian-movies-page"],
+    queryFn: () => tmdbClient.getIndianMovies(),
+    enabled: regionFilter === "indian",
     staleTime: 5 * 60 * 1000,
   });
 
