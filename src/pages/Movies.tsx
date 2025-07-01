@@ -175,7 +175,12 @@ const Movies: React.FC = () => {
 
   const filteredMovies = getFilteredMovies();
   const isLoading =
-    loadingPopular || loadingTopRated || loadingUpcoming || loadingSearch;
+    loadingPopular ||
+    loadingTopRated ||
+    loadingUpcoming ||
+    loadingNewest ||
+    loadingOldest ||
+    loadingSearch;
 
   const handlePlayClick = (movie: Movie | TVShow) => {
     setSelectedMovie(movie);
