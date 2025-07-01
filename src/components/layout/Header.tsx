@@ -59,6 +59,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
     { label: "Home", href: "/dashboard" },
     { label: "Movies", href: "/movies" },
     { label: "TV Shows", href: "/tv-shows" },
+    { label: "🇮🇳 Indian", href: "/indian" },
     { label: "My List", href: "/my-list" },
   ];
 
