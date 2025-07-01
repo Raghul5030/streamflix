@@ -286,6 +286,24 @@ const TVShows: React.FC = () => {
                       On The Air
                     </div>
                   </SelectItem>
+                  <SelectItem
+                    value="newest"
+                    className="text-white hover:bg-streaming-darker"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Newest First
+                    </div>
+                  </SelectItem>
+                  <SelectItem
+                    value="oldest"
+                    className="text-white hover:bg-streaming-darker"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Oldest First
+                    </div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
