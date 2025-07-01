@@ -167,6 +167,8 @@ const Indian: React.FC = () => {
     loadingTamil ||
     loadingTelugu ||
     loadingMalayalam ||
+    loadingNewest ||
+    loadingOldest ||
     loadingSearch;
 
   const handlePlayClick = (item: Movie | TVShow) => {
