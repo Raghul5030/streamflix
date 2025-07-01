@@ -189,6 +189,111 @@ class TMDBClient {
     return this.request("/genre/tv/list");
   }
 
+  // Indian Content Methods
+  async getIndianMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
+    return this.request("/discover/movie", {
+      page: page.toString(),
+      region: "IN",
+      with_origin_country: "IN",
+    });
+  }
+
+  async getBollywoodMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
+    return this.request("/discover/movie", {
+      page: page.toString(),
+      with_original_language: "hi",
+      region: "IN",
+    });
+  }
+
+  async getTamilMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
+    return this.request("/discover/movie", {
+      page: page.toString(),
+      with_original_language: "ta",
+      region: "IN",
+    });
+  }
+
+  async getTeluguMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
+    return this.request("/discover/movie", {
+      page: page.toString(),
+      with_original_language: "te",
+      region: "IN",
+    });
+  }
+
+  async getMalayalamMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
+    return this.request("/discover/movie", {
+      page: page.toString(),
+      with_original_language: "ml",
+      region: "IN",
+    });
+  }
+
+  async getBengaliMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
+    return this.request("/discover/movie", {
+      page: page.toString(),
+      with_original_language: "bn",
+      region: "IN",
+    });
+  }
+
+  async getKannadaMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
+    return this.request("/discover/movie", {
+      page: page.toString(),
+      with_original_language: "kn",
+      region: "IN",
+    });
+  }
+
+  async getIndianTVShows(page: number = 1): Promise<TMDBResponse<TVShow>> {
+    return this.request("/discover/tv", {
+      page: page.toString(),
+      with_origin_country: "IN",
+    });
+  }
+
+  async getHindiTVShows(page: number = 1): Promise<TMDBResponse<TVShow>> {
+    return this.request("/discover/tv", {
+      page: page.toString(),
+      with_original_language: "hi",
+      with_origin_country: "IN",
+    });
+  }
+
+  async getTrendingInIndia(
+    mediaType: "movie" | "tv" = "movie",
+    timeWindow: "day" | "week" = "week",
+  ): Promise<TMDBResponse<Movie | TVShow>> {
+    return this.request(`/trending/${mediaType}/${timeWindow}`, {
+      region: "IN",
+    });
+  }
+
+  async getPopularInIndia(
+    mediaType: "movie" | "tv" = "movie",
+    page: number = 1,
+  ): Promise<TMDBResponse<Movie | TVShow>> {
+    const endpoint = mediaType === "movie" ? "/movie/popular" : "/tv/popular";
+    return this.request(endpoint, {
+      page: page.toString(),
+      region: "IN",
+    });
+  }
+
+  async discoverByLanguage(
+    language: string,
+    mediaType: "movie" | "tv" = "movie",
+    page: number = 1,
+  ): Promise<TMDBResponse<Movie | TVShow>> {
+    const endpoint = `/discover/${mediaType}`;
+    return this.request(endpoint, {
+      page: page.toString(),
+      with_original_language: language,
+      region: "IN",
+    });
+  }
+
   // Utility methods for image URLs
   static getImageUrl(
     path: string,
