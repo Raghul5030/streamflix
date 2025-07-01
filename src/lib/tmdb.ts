@@ -91,12 +91,22 @@ class TMDBClient {
     return this.request(`/trending/movie/${timeWindow}`);
   }
 
-  async getPopularMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
-    return this.request("/movie/popular", { page: page.toString() });
+  async getPopularMovies(
+    page: number = 1,
+    region?: string,
+  ): Promise<TMDBResponse<Movie>> {
+    const params: Record<string, string> = { page: page.toString() };
+    if (region) params.region = region;
+    return this.request("/movie/popular", params);
   }
 
-  async getTopRatedMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
-    return this.request("/movie/top_rated", { page: page.toString() });
+  async getTopRatedMovies(
+    page: number = 1,
+    region?: string,
+  ): Promise<TMDBResponse<Movie>> {
+    const params: Record<string, string> = { page: page.toString() };
+    if (region) params.region = region;
+    return this.request("/movie/top_rated", params);
   }
 
   async getUpcomingMovies(page: number = 1): Promise<TMDBResponse<Movie>> {
