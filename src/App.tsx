@@ -70,6 +70,14 @@ const App = () => (
                 }
               />
               <Route
+                path="/indian"
+                element={
+                  <ProtectedRoute>
+                    <Indian />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/my-list"
                 element={
                   <ProtectedRoute>
