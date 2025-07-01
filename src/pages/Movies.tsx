@@ -94,10 +94,22 @@ const Movies: React.FC = () => {
     staleTime: 2 * 60 * 1000,
   });
 
-  // Get movies based on current sort
+  // Get movies based on current sort and region
   const getCurrentMovies = () => {
     if (searchQuery.trim()) {
       return searchResults?.results || [];
+    }
+
+    if (regionFilter === "indian") {
+      // For Indian content, prioritize Indian movies
+      switch (sortBy) {
+        case "top_rated":
+          return topRatedMovies?.results || [];
+        case "upcoming":
+          return upcomingMovies?.results || [];
+        default:
+          return indianMovies?.results || popularMovies?.results || [];
+      }
     }
 
     switch (sortBy) {
